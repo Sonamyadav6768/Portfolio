@@ -1,0 +1,415 @@
+<!-- ===== Live animated background (whole page) ===== -->
+<div class="live-bg" aria-hidden="true">
+  <span class="live-bg__blob live-bg__blob--1"></span>
+  <span class="live-bg__blob live-bg__blob--2"></span>
+  <span class="live-bg__blob live-bg__blob--3"></span>
+  <span class="live-bg__blob live-bg__blob--4"></span>
+</div>
+
+<!-- ===== Scroll progress ===== -->
+<div class="scroll-progress" [style.width.%]="progress()"></div>
+
+<!-- ===== Navbar ===== -->
+<header class="nav" [class.nav--scrolled]="scrolled()">
+  <div class="container nav__inner">
+    <a class="nav__brand" href="#home" (click)="closeMenu()">
+      <span class="nav__brand-mark">SY</span>
+      <span class="nav__brand-name">{{ profile.name }}</span>
+    </a>
+
+    <button
+      class="nav__toggle"
+      type="button"
+      (click)="toggleMenu()"
+      [attr.aria-expanded]="menuOpen()"
+      aria-label="Toggle navigation"
+    >
+      <span [class.open]="menuOpen()"></span>
+    </button>
+
+    <nav class="nav__links" [class.open]="menuOpen()">
+      @for (link of navLinks; track link.id) {
+        <a
+          [href]="'#' + link.id"
+          [class.active]="activeSection() === link.id"
+          (click)="closeMenu()"
+          >{{ link.label }}</a
+        >
+      }
+      <a class="nav__cta" [href]="'mailto:' + profile.email" (click)="closeMenu()">Get in touch</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- ===== Hero ===== -->
+  <section id="home" class="hero">
+    <div class="hero__grid" aria-hidden="true"></div>
+
+    <div class="container hero__inner">
+      <p class="hero__eyebrow hero-in" [style.--i]="0">
+        <span class="hero__wave">👋</span> Hi, I'm
+      </p>
+
+      <h1 class="hero__name">
+        @for (word of nameWords; track $index; let w = $index) {
+          <span class="hero__word">
+            @for (ch of word.split(''); track $index; let i = $index) {
+              <span class="hero__char" [style.animation-delay.ms]="600 + (w * 380 + i * 45)">{{
+                ch
+              }}</span>
+            }
+          </span>
+        }
+      </h1>
+
+      <h2 class="hero__title gradient-text gradient-text--flow hero-in" [style.--i]="2">
+        <span>{{ typed() }}</span><span class="type-caret">|</span>
+      </h2>
+
+      <p class="hero__tagline hero-in" [style.--i]="3">{{ profile.tagline }}</p>
+
+      <div class="hero__badges hero-in" [style.--i]="4">
+        <span class="hero__badge">💼 2+ Years of Experience</span>
+        <span class="hero__badge">⚡ Full-Stack Developer</span>
+        <span class="hero__badge">🚀 Enterprise Apps Delivered</span>
+      </div>
+
+      <div class="hero__strip hero-in" [style.--i]="5">
+        <div class="marquee">
+          <div class="marquee__track">
+            @for (pass of [0, 1]; track pass) {
+              @for (s of socials; track s.name) {
+                <a
+                  class="mq-item"
+                  [style.--sc]="s.color"
+                  [href]="s.url"
+                  target="_blank"
+                  rel="noopener"
+                  [attr.aria-hidden]="pass === 1 ? 'true' : null"
+                  [attr.tabindex]="pass === 1 ? -1 : null"
+                >
+                  <span class="mq-item__sign">
+                    @if (s.icon) {
+                      <app-icon [name]="s.icon" [filled]="true" [size]="22" />
+                    } @else {
+                      <span class="social__mono">{{ s.mono }}</span>
+                    }
+                  </span>
+                  {{ s.name }}
+                </a>
+              }
+            }
+          </div>
+        </div>
+      </div>
+
+      <p class="hero__location hero-in" [style.--i]="6">📍 {{ profile.location }}</p>
+
+      <a class="scroll-hint hero-in" [style.--i]="7" href="#about" aria-label="Scroll down">
+        <span class="scroll-hint__mouse"><span></span></span>
+        <span class="scroll-hint__text">Scroll</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ===== About ===== -->
+  <section id="about">
+    <div class="container">
+      <div class="section-head" appReveal>
+        <span class="section-eyebrow">About</span>
+        <h2 class="section-title">A bit about me</h2>
+      </div>
+
+      <div class="about-card" appReveal="scale">
+        <span class="about-card__quote">&ldquo;</span>
+        <p class="about__text">{{ profile.summary }}</p>
+        <div class="about-card__tags">
+          <span>Clean Code</span>
+          <span>Performance</span>
+          <span>System Design</span>
+          <span>Problem Solving</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Skills ===== -->
+  <section id="skills" class="skills-section">
+    <div class="container">
+      <div class="section-head" appReveal>
+        <span class="section-eyebrow">Toolbox</span>
+        <h2 class="section-title">Skills &amp; Technologies</h2>
+      </div>
+
+      <p class="skills-hint" appReveal>
+        Click a card to bring it to front · tap any skill to see my proficiency
+      </p>
+
+      <div class="deck" appReveal="scale">
+        <div class="deck__mask">
+          <button
+            class="deck__zone deck__zone--left"
+            type="button"
+            (click)="prevSkill()"
+            aria-label="Previous skill card"
+          ></button>
+          <button
+            class="deck__zone deck__zone--right"
+            type="button"
+            (click)="nextSkill()"
+            aria-label="Next skill card"
+          ></button>
+          <div class="deck__stage">
+            @for (group of skills; track group.category; let i = $index) {
+              <article
+                class="deckcard"
+                [class.is-active]="skillIndex() === i"
+                [style.transform]="cardTransform(i)"
+                [style.zIndex]="cardZ(i)"
+                [style.opacity]="cardOpacity(i)"
+                [style.pointerEvents]="cardVisible(i) ? 'auto' : 'none'"
+                (click)="onCardClick(i)"
+              >
+                <div class="deckcard__head">
+                  <span class="deckcard__icon"><app-icon [name]="group.icon" [size]="26" /></span>
+                  <div>
+                    <span class="deckcard__count">{{ i + 1 }} / {{ skills.length }}</span>
+                    <h3>{{ group.category }}</h3>
+                  </div>
+                </div>
+                <div class="deckcard__items">
+                  @for (item of group.items; track item.name) {
+                    <button
+                      type="button"
+                      class="chip chip--btn"
+                      (click)="onSkillClick($event, group.category, item)"
+                    >
+                      <span class="chip__dot"></span>{{ item.name }}
+                    </button>
+                  }
+                </div>
+              </article>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="deck__dots">
+        @for (group of skills; track group.category; let i = $index) {
+          <button
+            type="button"
+            class="deck__dot"
+            [class.active]="skillIndex() === i"
+            (click)="setSkill(i)"
+            [attr.aria-label]="'Show ' + group.category"
+          ></button>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Experience ===== -->
+  <section id="experience">
+    <div class="container">
+      <div class="section-head" appReveal>
+        <span class="section-eyebrow">Career</span>
+        <h2 class="section-title">Experience</h2>
+      </div>
+
+      <div class="timeline">
+        <span class="timeline__line" appReveal aria-hidden="true"></span>
+        @for (job of experience; track job.company; let i = $index) {
+          <article class="timeline__item" [appReveal]="i % 2 === 0 ? 'left' : 'right'">
+            <div class="timeline__dot"></div>
+            <div class="timeline__card" (click)="openExp(job)" role="button" tabindex="0"
+                 (keydown.enter)="openExp(job)" (keydown.space)="openExp(job)">
+              <div class="timeline__top">
+                <h3 class="timeline__role">{{ job.role }}</h3>
+                <span class="timeline__period">{{ job.period }}</span>
+              </div>
+              <p class="timeline__company">
+                <strong>{{ job.company }}</strong> · {{ job.location }}
+              </p>
+              <ul class="timeline__list">
+                @for (point of job.highlights; track point) {
+                  <li>{{ point }}</li>
+                }
+              </ul>
+              <span class="timeline__cta">View tech stack <span class="arrow">→</span></span>
+            </div>
+          </article>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Education & Certifications ===== -->
+  <section id="education" class="edu-section">
+    <div class="container edu-grid">
+      <div>
+        <div class="section-head" appReveal>
+          <span class="section-eyebrow">Academics</span>
+          <h2 class="section-title">Education</h2>
+        </div>
+        @for (edu of education; track edu.institution) {
+          <article class="edu-card" appReveal="left">
+            <span class="edu-card__cap">🎓</span>
+            <h3>{{ edu.degree }}</h3>
+            <p class="edu-card__inst">{{ edu.institution }}</p>
+            <p class="edu-card__meta">{{ edu.detail }} · {{ edu.period }}</p>
+            <p class="edu-card__meta">{{ edu.location }}</p>
+          </article>
+        }
+      </div>
+
+      <div>
+        <div class="section-head" appReveal>
+          <span class="section-eyebrow">Highlights</span>
+          <h2 class="section-title">Certifications</h2>
+        </div>
+        <div class="cert-list">
+          @for (cert of certifications; track cert; let i = $index) {
+            <article class="cert-card" appReveal="right" [revealDelay]="i * 140">
+              <div class="cert-card__ribbon" aria-hidden="true"></div>
+              <div class="cert-card__seal" aria-hidden="true"><span>★</span></div>
+              <div class="cert-card__body">
+                <span class="cert-card__label">Certificate</span>
+                <p>{{ cert }}</p>
+              </div>
+            </article>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Resume ===== -->
+  <section id="resume" class="resume-section">
+    <div class="container">
+      <div class="resume-card" appReveal="scale">
+        <div class="resume-card__icon" aria-hidden="true">
+          <app-icon name="code" [size]="26" />
+        </div>
+        <div class="resume-card__body">
+          <span class="section-eyebrow">Résumé</span>
+          <h2 class="resume-card__title">Take a look at my full resume</h2>
+          <p class="resume-card__text">
+            View it right here or download a PDF copy — everything about my experience, skills, and
+            education in one page.
+          </p>
+        </div>
+        <div class="resume-card__actions">
+          <a class="btn btn--primary" [href]="profile.resume" target="_blank" rel="noopener">
+            View Resume
+          </a>
+          <a class="btn btn--ghost" [href]="profile.resume" [attr.download]="profile.resume">
+            ⬇ Download PDF
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Contact ===== -->
+  <section id="contact" class="contact-section">
+    <div class="container">
+      <div class="contact" appReveal="scale">
+        <span class="contact__badge"><span class="contact__pulse"></span> Available for opportunities</span>
+        <h2 class="section-title">Let's build something together</h2>
+        <p class="contact__text">
+          I'm open to new opportunities and collaborations. Feel free to reach out — I'll get back
+          to you soon.
+        </p>
+        <div class="contact__actions">
+          <a class="btn btn--primary" [href]="'mailto:' + profile.email">{{ profile.email }}</a>
+          <a class="btn btn--ghost" [href]="'tel:' + profile.phone">{{ profile.phone }}</a>
+        </div>
+        <div class="socials socials--center">
+          @for (s of socials; track s.name) {
+            <a
+              class="social"
+              [style.--sc]="s.color"
+              [href]="s.url"
+              target="_blank"
+              rel="noopener"
+              [attr.aria-label]="s.name"
+              [attr.title]="s.name"
+            >
+              @if (s.icon) {
+                <app-icon [name]="s.icon" [filled]="true" [size]="22" />
+              } @else {
+                <span class="social__mono">{{ s.mono }}</span>
+              }
+              <span class="social__tip">{{ s.name }}</span>
+            </a>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <span>© {{ year }} {{ profile.name }}</span>
+    <span>Built with Angular</span>
+  </div>
+</footer>
+
+<!-- ===== Experience detail modal ===== -->
+@if (activeExp(); as job) {
+  <div class="modal" (click)="closePopups()">
+    <div class="modal__panel" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <button class="modal__close" type="button" (click)="closePopups()" aria-label="Close">✕</button>
+
+      <div class="modal__header">
+        <span class="modal__icon"><app-icon name="server" [size]="28" /></span>
+        <div>
+          <h3 class="modal__title">{{ job.company }}</h3>
+          <p class="modal__sub">{{ job.role }} · {{ job.period }}</p>
+        </div>
+      </div>
+
+      <p class="modal__desc">{{ job.summary }}</p>
+
+      <div class="modal__block">
+        <h4>Tech stack I worked on</h4>
+        <div class="modal__stack">
+          @for (tech of job.stack; track tech) {
+            <span class="chip"><span class="chip__dot"></span>{{ tech }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="modal__block">
+        <h4>What I did</h4>
+        <ul class="modal__list">
+          @for (point of job.highlights; track point) {
+            <li>{{ point }}</li>
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ===== Skill proficiency popup ===== -->
+@if (activeSkill(); as s) {
+  <div class="modal" (click)="closePopups()">
+    <div class="skillpop" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <button class="modal__close" type="button" (click)="closePopups()" aria-label="Close">✕</button>
+
+      <span class="skillpop__cat">{{ s.category }}</span>
+      <h3 class="skillpop__name">{{ s.name }}</h3>
+
+      <div class="skillpop__meter">
+        <div class="skillpop__fill" [style.width.%]="s.level"></div>
+      </div>
+      <div class="skillpop__row">
+        <span class="skillpop__label">{{ skillLabel(s.level) }}</span>
+        <span class="skillpop__pct">{{ s.level }}%</span>
+      </div>
+    </div>
+  </div>
+}
