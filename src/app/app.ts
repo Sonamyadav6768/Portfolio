@@ -5,8 +5,8 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
-import { IconComponent } from './icon.component';
-import { RevealDirective } from './reveal.directive';
+import { IconComponent } from '../icon.component';
+import { RevealDirective } from '../reveal.directive';
 import {
   PROFILE,
   SKILLS,
@@ -15,7 +15,7 @@ import {
   CERTIFICATIONS,
   ExperienceItem,
   SkillItem,
-} from './portfolio-data';
+} from '../portfolio-data';
 
 interface ActiveSkill extends SkillItem {
   category: string;
