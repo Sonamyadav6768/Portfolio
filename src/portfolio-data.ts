@@ -39,7 +39,7 @@ export const PROFILE = {
   location: 'Bhopal, India',
   linkedin: 'https://www.linkedin.com/in/sonam-yadav-71645420a/',
   github: 'https://github.com/Sonamyadav6768',
-  resume: 'Sonam_Yadav_Resume.pdf',
+  resume: '/Sonam_Yadav_Resume.pdf',
 };
 
 export const STATS = [
